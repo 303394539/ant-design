@@ -1,6 +1,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import { TableLocale } from './interface';
+
+import type { TableLocale } from './interface';
 
 interface DefaultExpandIconProps<RecordType> {
   prefixCls: string;
@@ -23,7 +24,7 @@ function renderExpandIcon(locale: TableLocale) {
     return (
       <button
         type="button"
-        onClick={e => {
+        onClick={(e) => {
           onExpand(record, e!);
           e.stopPropagation();
         }}
@@ -33,6 +34,7 @@ function renderExpandIcon(locale: TableLocale) {
           [`${iconPrefix}-collapsed`]: expandable && !expanded,
         })}
         aria-label={expanded ? locale.collapse : locale.expand}
+        aria-expanded={expanded}
       />
     );
   };

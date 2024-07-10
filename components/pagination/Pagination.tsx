@@ -1,170 +1,152 @@
 import * as React from 'react';
-import RcPagination from 'rc-pagination';
-import enUS from 'rc-pagination/lib/locale/en_US';
-import classNames from 'classnames';
-import LeftOutlined from '@ant-design/icons/LeftOutlined';
-import RightOutlined from '@ant-design/icons/RightOutlined';
 import DoubleLeftOutlined from '@ant-design/icons/DoubleLeftOutlined';
 import DoubleRightOutlined from '@ant-design/icons/DoubleRightOutlined';
+import LeftOutlined from '@ant-design/icons/LeftOutlined';
+import RightOutlined from '@ant-design/icons/RightOutlined';
+import classNames from 'classnames';
+import type { PaginationLocale, PaginationProps as RcPaginationProps } from 'rc-pagination';
+import RcPagination from 'rc-pagination';
+import enUS from 'rc-pagination/lib/locale/en_US';
 
-import ResponsiveObserve from '../_util/responsiveObserve';
-import MiniSelect from './MiniSelect';
-import Select from '../select';
-import LocaleReceiver from '../locale-provider/LocaleReceiver';
-import { ConfigConsumer, ConfigConsumerProps } from '../config-provider';
+import { ConfigContext } from '../config-provider';
+import useSize from '../config-provider/hooks/useSize';
+import useBreakpoint from '../grid/hooks/useBreakpoint';
+import { useLocale } from '../locale';
+import { useToken } from '../theme/internal';
+import { MiddleSelect, MiniSelect } from './Select';
+import useStyle from './style';
+import BorderedStyle from './style/bordered';
 
-export interface PaginationProps {
-  total?: number;
-  defaultCurrent?: number;
-  disabled?: boolean;
-  current?: number;
-  defaultPageSize?: number;
-  pageSize?: number;
-  onChange?: (page: number, pageSize?: number) => void;
-  hideOnSinglePage?: boolean;
-  showSizeChanger?: boolean;
-  pageSizeOptions?: string[];
-  onShowSizeChange?: (current: number, size: number) => void;
+export interface PaginationProps extends RcPaginationProps {
   showQuickJumper?: boolean | { goButton?: React.ReactNode };
-  showTitle?: boolean;
-  showTotal?: (total: number, range: [number, number]) => React.ReactNode;
   size?: 'default' | 'small';
   responsive?: boolean;
-  simple?: boolean;
-  style?: React.CSSProperties;
-  locale?: Object;
-  className?: string;
-  prefixCls?: string;
-  selectPrefixCls?: string;
-  itemRender?: (
-    page: number,
-    type: 'page' | 'prev' | 'next' | 'jump-prev' | 'jump-next',
-    originalElement: React.ReactElement<HTMLElement>,
-  ) => React.ReactNode;
   role?: string;
-  showLessItems?: boolean;
+  totalBoundaryShowSizeChanger?: number;
+  rootClassName?: string;
 }
 
 export type PaginationPosition = 'top' | 'bottom' | 'both';
 
-export interface PaginationConfig extends PaginationProps {
+export interface PaginationConfig extends Omit<PaginationProps, 'rootClassName'> {
   position?: PaginationPosition;
 }
 
-export type PaginationLocale = any;
+export type { PaginationLocale };
 
-export default class Pagination extends React.Component<PaginationProps, {}> {
-  private token: string;
+const Pagination: React.FC<PaginationProps> = (props) => {
+  const {
+    align,
+    prefixCls: customizePrefixCls,
+    selectPrefixCls: customizeSelectPrefixCls,
+    className,
+    rootClassName,
+    style,
+    size: customizeSize,
+    locale: customLocale,
+    selectComponentClass,
+    responsive,
+    showSizeChanger,
+    ...restProps
+  } = props;
+  const { xs } = useBreakpoint(responsive);
+  const [, token] = useToken();
 
-  private inferredSmall: boolean = false;
+  const { getPrefixCls, direction, pagination = {} } = React.useContext(ConfigContext);
+  const prefixCls = getPrefixCls('pagination', customizePrefixCls);
 
-  componentDidMount() {
-    this.token = ResponsiveObserve.subscribe(screens => {
-      const { xs } = screens;
-      const { size, responsive } = this.props;
-      const inferredSmall = !!(xs && !size && responsive);
-      if (this.inferredSmall !== inferredSmall) {
-        this.inferredSmall = inferredSmall;
-        this.forceUpdate();
-      }
-    });
-  }
+  // Style
+  const [wrapCSSVar, hashId, cssVarCls] = useStyle(prefixCls);
 
-  componentWillUnmount() {
-    ResponsiveObserve.unsubscribe(this.token);
-  }
+  const mergedShowSizeChanger = showSizeChanger ?? pagination.showSizeChanger;
 
-  getIconsProps = (prefixCls: string, direction: 'ltr' | 'rtl' | undefined) => {
-    let prevIcon = (
-      <a className={`${prefixCls}-item-link`}>
-        <LeftOutlined />
-      </a>
+  const iconsProps = React.useMemo<Record<PropertyKey, React.ReactNode>>(() => {
+    const ellipsis = <span className={`${prefixCls}-item-ellipsis`}>•••</span>;
+    const prevIcon = (
+      <button className={`${prefixCls}-item-link`} type="button" tabIndex={-1}>
+        {direction === 'rtl' ? <RightOutlined /> : <LeftOutlined />}
+      </button>
     );
-    let nextIcon = (
-      <a className={`${prefixCls}-item-link`}>
-        <RightOutlined />
-      </a>
+    const nextIcon = (
+      <button className={`${prefixCls}-item-link`} type="button" tabIndex={-1}>
+        {direction === 'rtl' ? <LeftOutlined /> : <RightOutlined />}
+      </button>
     );
-    let jumpPrevIcon = (
+    const jumpPrevIcon = (
+      // biome-ignore lint/a11y/useValidAnchor: it is hard to refactor
       <a className={`${prefixCls}-item-link`}>
-        {/* You can use transition effects in the container :) */}
         <div className={`${prefixCls}-item-container`}>
-          <DoubleLeftOutlined className={`${prefixCls}-item-link-icon`} />
-          <span className={`${prefixCls}-item-ellipsis`}>•••</span>
+          {direction === 'rtl' ? (
+            <DoubleRightOutlined className={`${prefixCls}-item-link-icon`} />
+          ) : (
+            <DoubleLeftOutlined className={`${prefixCls}-item-link-icon`} />
+          )}
+          {ellipsis}
         </div>
       </a>
     );
-    let jumpNextIcon = (
+    const jumpNextIcon = (
+      // biome-ignore lint/a11y/useValidAnchor: it is hard to refactor
       <a className={`${prefixCls}-item-link`}>
-        {/* You can use transition effects in the container :) */}
         <div className={`${prefixCls}-item-container`}>
-          <DoubleRightOutlined className={`${prefixCls}-item-link-icon`} />
-          <span className={`${prefixCls}-item-ellipsis`}>•••</span>
+          {direction === 'rtl' ? (
+            <DoubleLeftOutlined className={`${prefixCls}-item-link-icon`} />
+          ) : (
+            <DoubleRightOutlined className={`${prefixCls}-item-link-icon`} />
+          )}
+          {ellipsis}
         </div>
       </a>
     );
+    return { prevIcon, nextIcon, jumpPrevIcon, jumpNextIcon };
+  }, [direction, prefixCls]);
 
-    // change arrows direction in right-to-left direction
-    if (direction === 'rtl') {
-      let temp: any;
-      temp = prevIcon;
-      prevIcon = nextIcon;
-      nextIcon = temp;
+  const [contextLocale] = useLocale('Pagination', enUS);
 
-      temp = jumpPrevIcon;
-      jumpPrevIcon = jumpNextIcon;
-      jumpNextIcon = temp;
-    }
-    return {
-      prevIcon,
-      nextIcon,
-      jumpPrevIcon,
-      jumpNextIcon,
-    };
-  };
+  const locale = { ...contextLocale, ...customLocale };
 
-  renderPagination = (contextLocale: PaginationLocale) => {
-    const {
-      prefixCls: customizePrefixCls,
-      selectPrefixCls: customizeSelectPrefixCls,
-      className,
-      size,
-      locale: customLocale,
-      ...restProps
-    } = this.props;
-    const locale = { ...contextLocale, ...customLocale };
-    const isSmall = size === 'small' || this.inferredSmall;
-    return (
-      <ConfigConsumer>
-        {({ getPrefixCls, direction }: ConfigConsumerProps) => {
-          const prefixCls = getPrefixCls('pagination', customizePrefixCls);
-          const selectPrefixCls = getPrefixCls('select', customizeSelectPrefixCls);
-          const extendedClassName = classNames(className, {
-            mini: isSmall,
-            [`${prefixCls}-rtl`]: direction === 'rtl',
-          });
+  const mergedSize = useSize(customizeSize);
 
-          return (
-            <RcPagination
-              {...restProps}
-              prefixCls={prefixCls}
-              selectPrefixCls={selectPrefixCls}
-              {...this.getIconsProps(prefixCls, direction)}
-              className={extendedClassName}
-              selectComponentClass={isSmall ? MiniSelect : Select}
-              locale={locale}
-            />
-          );
-        }}
-      </ConfigConsumer>
-    );
-  };
+  const isSmall = mergedSize === 'small' || !!(xs && !mergedSize && responsive);
 
-  render() {
-    return (
-      <LocaleReceiver componentName="Pagination" defaultLocale={enUS}>
-        {this.renderPagination}
-      </LocaleReceiver>
-    );
-  }
+  const selectPrefixCls = getPrefixCls('select', customizeSelectPrefixCls);
+
+  const extendedClassName = classNames(
+    {
+      [`${prefixCls}-${align}`]: !!align,
+      [`${prefixCls}-mini`]: isSmall,
+      [`${prefixCls}-rtl`]: direction === 'rtl',
+      [`${prefixCls}-bordered`]: token.wireframe,
+    },
+    pagination?.className,
+    className,
+    rootClassName,
+    hashId,
+    cssVarCls,
+  );
+
+  const mergedStyle: React.CSSProperties = { ...pagination?.style, ...style };
+
+  return wrapCSSVar(
+    <>
+      {token.wireframe && <BorderedStyle prefixCls={prefixCls} />}
+      <RcPagination
+        {...iconsProps}
+        {...restProps}
+        style={mergedStyle}
+        prefixCls={prefixCls}
+        selectPrefixCls={selectPrefixCls}
+        className={extendedClassName}
+        selectComponentClass={selectComponentClass || (isSmall ? MiniSelect : MiddleSelect)}
+        locale={locale}
+        showSizeChanger={mergedShowSizeChanger}
+      />
+    </>,
+  );
+};
+
+if (process.env.NODE_ENV !== 'production') {
+  Pagination.displayName = 'Pagination';
 }
+
+export default Pagination;

@@ -11,39 +11,48 @@ export interface CellProps {
   className?: string;
   component: string;
   style?: React.CSSProperties;
+  labelStyle?: React.CSSProperties;
+  contentStyle?: React.CSSProperties;
   bordered?: boolean;
   label?: React.ReactNode;
   content?: React.ReactNode;
   colon?: boolean;
+  type?: 'label' | 'content' | 'item';
 }
 
-const Cell: React.FC<CellProps> = ({
-  itemPrefixCls,
-  component,
-  span,
-  className,
-  style,
-  bordered,
-  label,
-  content,
-  colon,
-}) => {
-  const Component = component as any;
+const Cell: React.FC<CellProps> = (props) => {
+  const {
+    itemPrefixCls,
+    component,
+    span,
+    className,
+    style,
+    labelStyle,
+    contentStyle,
+    bordered,
+    label,
+    content,
+    colon,
+    type,
+  } = props;
+
+  const Component = component as keyof JSX.IntrinsicElements;
 
   if (bordered) {
     return (
       <Component
         className={classNames(
           {
-            [`${itemPrefixCls}-item-label`]: notEmpty(label),
-            [`${itemPrefixCls}-item-content`]: notEmpty(content),
+            [`${itemPrefixCls}-item-label`]: type === 'label',
+            [`${itemPrefixCls}-item-content`]: type === 'content',
           },
           className,
         )}
         style={style}
         colSpan={span}
       >
-        {notEmpty(label) ? label : content}
+        {notEmpty(label) && <span style={labelStyle}>{label}</span>}
+        {notEmpty(content) && <span style={contentStyle}>{content}</span>}
       </Component>
     );
   }
@@ -54,16 +63,23 @@ const Cell: React.FC<CellProps> = ({
       style={style}
       colSpan={span}
     >
-      {label && (
-        <span
-          className={classNames(`${itemPrefixCls}-item-label`, {
-            [`${itemPrefixCls}-item-colon`]: colon,
-          })}
-        >
-          {label}
-        </span>
-      )}
-      {content && <span className={classNames(`${itemPrefixCls}-item-content`)}>{content}</span>}
+      <div className={`${itemPrefixCls}-item-container`}>
+        {(label || label === 0) && (
+          <span
+            className={classNames(`${itemPrefixCls}-item-label`, {
+              [`${itemPrefixCls}-item-no-colon`]: !colon,
+            })}
+            style={labelStyle}
+          >
+            {label}
+          </span>
+        )}
+        {(content || content === 0) && (
+          <span className={classNames(`${itemPrefixCls}-item-content`)} style={contentStyle}>
+            {content}
+          </span>
+        )}
+      </div>
     </Component>
   );
 };

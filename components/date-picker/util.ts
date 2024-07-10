@@ -1,7 +1,21 @@
-import { PickerMode } from 'rc-picker/lib/interface';
-import { PickerLocale } from './generatePicker';
+import * as React from 'react';
+import type { AlignType } from '@rc-component/trigger';
+import type { PickerMode } from 'rc-picker/lib/interface';
 
-export function getPlaceholder(picker: PickerMode | undefined, locale: PickerLocale): string {
+import type { SelectCommonPlacement } from '../_util/motion';
+import type { DirectionType } from '../config-provider';
+import useSelectIcons from '../select/useIcons';
+import type { PickerLocale, PickerProps } from './generatePicker';
+
+export function getPlaceholder(
+  locale: PickerLocale,
+  picker?: PickerMode,
+  customizePlaceholder?: string,
+): string {
+  if (customizePlaceholder !== undefined) {
+    return customizePlaceholder;
+  }
+
   if (picker === 'year' && locale.lang.yearPlaceholder) {
     return locale.lang.yearPlaceholder;
   }
@@ -20,9 +34,20 @@ export function getPlaceholder(picker: PickerMode | undefined, locale: PickerLoc
   return locale.lang.placeholder;
 }
 
-export function getRangePlaceholder(picker: PickerMode | undefined, locale: PickerLocale) {
+export function getRangePlaceholder(
+  locale: PickerLocale,
+  picker?: PickerMode,
+  customizePlaceholder?: [string, string],
+) {
+  if (customizePlaceholder !== undefined) {
+    return customizePlaceholder;
+  }
+
   if (picker === 'year' && locale.lang.yearPlaceholder) {
     return locale.lang.rangeYearPlaceholder;
+  }
+  if (picker === 'quarter' && locale.lang.quarterPlaceholder) {
+    return locale.lang.rangeQuarterPlaceholder;
   }
   if (picker === 'month' && locale.lang.monthPlaceholder) {
     return locale.lang.rangeMonthPlaceholder;
@@ -34,4 +59,76 @@ export function getRangePlaceholder(picker: PickerMode | undefined, locale: Pick
     return locale!.timePickerLocale.rangePlaceholder;
   }
   return locale.lang.rangePlaceholder;
+}
+
+export function transPlacement2DropdownAlign(
+  direction: DirectionType,
+  placement?: SelectCommonPlacement,
+): AlignType {
+  const overflow = {
+    adjustX: 1,
+    adjustY: 1,
+  };
+  switch (placement) {
+    case 'bottomLeft': {
+      return {
+        points: ['tl', 'bl'],
+        offset: [0, 4],
+        overflow,
+      };
+    }
+    case 'bottomRight': {
+      return {
+        points: ['tr', 'br'],
+        offset: [0, 4],
+        overflow,
+      };
+    }
+    case 'topLeft': {
+      return {
+        points: ['bl', 'tl'],
+        offset: [0, -4],
+        overflow,
+      };
+    }
+    case 'topRight': {
+      return {
+        points: ['br', 'tr'],
+        offset: [0, -4],
+        overflow,
+      };
+    }
+    default: {
+      return {
+        points: direction === 'rtl' ? ['tr', 'br'] : ['tl', 'bl'],
+        offset: [0, 4],
+        overflow,
+      };
+    }
+  }
+}
+
+export function useIcons(props: Pick<PickerProps, 'allowClear' | 'removeIcon'>, prefixCls: string) {
+  const { allowClear = true } = props;
+
+  const { clearIcon, removeIcon } = useSelectIcons({
+    ...props,
+    prefixCls,
+    componentName: 'DatePicker',
+  });
+
+  const mergedAllowClear = React.useMemo(() => {
+    if (allowClear === false) {
+      return false;
+    }
+
+    const allowClearConfig = allowClear === true ? {} : allowClear;
+
+    return {
+      clearIcon: clearIcon as React.ReactNode,
+      ...allowClearConfig,
+    };
+  }, [allowClear, clearIcon]);
+
+  return [mergedAllowClear, removeIcon] as const;
 }

@@ -1,22 +1,25 @@
 import * as React from 'react';
-import classNames from 'classnames';
-import { convertChildrenToColumns } from 'rc-table/lib/hooks/useColumns';
 import CaretDownOutlined from '@ant-design/icons/CaretDownOutlined';
 import CaretUpOutlined from '@ant-design/icons/CaretUpOutlined';
-import {
-  TransformColumns,
-  ColumnsType,
-  Key,
-  ColumnType,
-  SortOrder,
-  CompareFn,
-  ColumnTitleProps,
-  SorterResult,
-  ColumnGroupType,
-  TableLocale,
-} from '../interface';
+import classNames from 'classnames';
+import KeyCode from 'rc-util/lib/KeyCode';
+
+import type { TooltipProps } from '../../tooltip';
 import Tooltip from '../../tooltip';
-import { getColumnKey, getColumnPos, renderColumnTitle } from '../util';
+import type {
+  ColumnGroupType,
+  ColumnsType,
+  ColumnTitleProps,
+  ColumnType,
+  CompareFn,
+  Key,
+  SorterResult,
+  SorterTooltipProps,
+  SortOrder,
+  TableLocale,
+  TransformColumns,
+} from '../interface';
+import { getColumnKey, getColumnPos, renderColumnTitle, safeColumnTitle } from '../util';
 
 const ASCEND = 'ascend';
 const DESCEND = 'descend';
@@ -105,11 +108,11 @@ function collectSortStates<RecordType>(
 function injectSorter<RecordType>(
   prefixCls: string,
   columns: ColumnsType<RecordType>,
-  sorterSates: SortState<RecordType>[],
+  sorterStates: SortState<RecordType>[],
   triggerSorter: (sorterSates: SortState<RecordType>) => void,
   defaultSortDirections: SortOrder[],
   tableLocale?: TableLocale,
-  tableShowSorterTooltip?: boolean,
+  tableShowSorterTooltip?: boolean | SorterTooltipProps,
   pos?: string,
 ): ColumnsType<RecordType> {
   return (columns || []).map((column, index) => {
@@ -122,24 +125,44 @@ function injectSorter<RecordType>(
         newColumn.showSorterTooltip === undefined
           ? tableShowSorterTooltip
           : newColumn.showSorterTooltip;
+
       const columnKey = getColumnKey(newColumn, columnPos);
-      const sorterState = sorterSates.find(({ key }) => key === columnKey);
-      const sorterOrder = sorterState ? sorterState.sortOrder : null;
-      const nextSortOrder = nextSortDirection(sortDirections, sorterOrder);
-      const upNode: React.ReactNode = sortDirections.includes(ASCEND) && (
-        <CaretUpOutlined
-          className={classNames(`${prefixCls}-column-sorter-up`, {
-            active: sorterOrder === ASCEND,
-          })}
-        />
-      );
-      const downNode: React.ReactNode = sortDirections.includes(DESCEND) && (
-        <CaretDownOutlined
-          className={classNames(`${prefixCls}-column-sorter-down`, {
-            active: sorterOrder === DESCEND,
-          })}
-        />
-      );
+      const sorterState = sorterStates.find(({ key }) => key === columnKey);
+      const sortOrder = sorterState ? sorterState.sortOrder : null;
+      const nextSortOrder = nextSortDirection(sortDirections, sortOrder);
+
+      let sorter: React.ReactNode;
+      if (column.sortIcon) {
+        sorter = column.sortIcon({ sortOrder });
+      } else {
+        const upNode: React.ReactNode = sortDirections.includes(ASCEND) && (
+          <CaretUpOutlined
+            className={classNames(`${prefixCls}-column-sorter-up`, {
+              active: sortOrder === ASCEND,
+            })}
+          />
+        );
+        const downNode: React.ReactNode = sortDirections.includes(DESCEND) && (
+          <CaretDownOutlined
+            className={classNames(`${prefixCls}-column-sorter-down`, {
+              active: sortOrder === DESCEND,
+            })}
+          />
+        );
+        sorter = (
+          <span
+            className={classNames(`${prefixCls}-column-sorter`, {
+              [`${prefixCls}-column-sorter-full`]: !!(upNode && downNode),
+            })}
+          >
+            <span className={`${prefixCls}-column-sorter-inner`} aria-hidden="true">
+              {upNode}
+              {downNode}
+            </span>
+          </span>
+        );
+      }
+
       const { cancelSort, triggerAsc, triggerDesc } = tableLocale || {};
       let sortTip: string | undefined = cancelSort;
       if (nextSortOrder === DESCEND) {
@@ -147,37 +170,51 @@ function injectSorter<RecordType>(
       } else if (nextSortOrder === ASCEND) {
         sortTip = triggerAsc;
       }
+      const tooltipProps: TooltipProps =
+        typeof showSorterTooltip === 'object'
+          ? {
+              title: sortTip,
+              ...showSorterTooltip,
+            }
+          : { title: sortTip };
       newColumn = {
         ...newColumn,
-        className: classNames(newColumn.className, { [`${prefixCls}-column-sort`]: sorterOrder }),
+        className: classNames(newColumn.className, { [`${prefixCls}-column-sort`]: sortOrder }),
         title: (renderProps: ColumnTitleProps<RecordType>) => {
+          const columnSortersClass = `${prefixCls}-column-sorters`;
+          const renderColumnTitleWrapper = (
+            <span className={`${prefixCls}-column-title`}>
+              {renderColumnTitle(column.title, renderProps)}
+            </span>
+          );
           const renderSortTitle = (
-            <div className={`${prefixCls}-column-sorters`}>
-              <span>{renderColumnTitle(column.title, renderProps)}</span>
-              <span
-                className={classNames(`${prefixCls}-column-sorter`, {
-                  [`${prefixCls}-column-sorter-full`]: upNode && downNode,
-                })}
-              >
-                <span className={`${prefixCls}-column-sorter-inner`}>
-                  {upNode}
-                  {downNode}
-                </span>
-              </span>
+            <div className={columnSortersClass}>
+              {renderColumnTitleWrapper}
+              {sorter}
             </div>
           );
-          return showSorterTooltip ? (
-            <Tooltip title={sortTip}>
-              <div className={`${prefixCls}-column-sorters-with-tooltip`}>{renderSortTitle}</div>
-            </Tooltip>
-          ) : (
-            renderSortTitle
-          );
+          if (showSorterTooltip) {
+            if (
+              typeof showSorterTooltip !== 'boolean' &&
+              showSorterTooltip?.target === 'sorter-icon'
+            ) {
+              return (
+                <div
+                  className={`${columnSortersClass} ${prefixCls}-column-sorters-tooltip-target-sorter`}
+                >
+                  {renderColumnTitleWrapper}
+                  <Tooltip {...tooltipProps}>{sorter}</Tooltip>
+                </div>
+              );
+            }
+            return <Tooltip {...tooltipProps}>{renderSortTitle}</Tooltip>;
+          }
+          return renderSortTitle;
         },
-        onHeaderCell: col => {
-          const cell: React.HTMLAttributes<HTMLElement> =
-            (column.onHeaderCell && column.onHeaderCell(col)) || {};
+        onHeaderCell: (col) => {
+          const cell: React.HTMLAttributes<HTMLElement> = column.onHeaderCell?.(col) || {};
           const originOnClick = cell.onClick;
+          const originOKeyDown = cell.onKeyDown;
           cell.onClick = (event: React.MouseEvent<HTMLElement>) => {
             triggerSorter({
               column,
@@ -185,14 +222,34 @@ function injectSorter<RecordType>(
               sortOrder: nextSortOrder,
               multiplePriority: getMultiplePriority(column),
             });
-
-            if (originOnClick) {
-              originOnClick(event);
+            originOnClick?.(event);
+          };
+          cell.onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+            if (event.keyCode === KeyCode.ENTER) {
+              triggerSorter({
+                column,
+                key: columnKey,
+                sortOrder: nextSortOrder,
+                multiplePriority: getMultiplePriority(column),
+              });
+              originOKeyDown?.(event);
             }
           };
 
-          cell.className = classNames(cell.className, `${prefixCls}-column-has-sorters`);
+          const renderTitle = safeColumnTitle(column.title, {});
+          const displayTitle = renderTitle?.toString();
 
+          // Inform the screen-reader so it can tell the visually impaired user which column is sorted
+          if (sortOrder) {
+            cell['aria-sort'] = sortOrder === 'ascend' ? 'ascending' : 'descending';
+          } else {
+            cell['aria-label'] = displayTitle || '';
+          }
+          cell.className = classNames(cell.className, `${prefixCls}-column-has-sorters`);
+          cell.tabIndex = 0;
+          if (column.ellipsis) {
+            cell.title = (renderTitle ?? '').toString();
+          }
           return cell;
         },
       };
@@ -204,7 +261,7 @@ function injectSorter<RecordType>(
         children: injectSorter(
           prefixCls,
           newColumn.children,
-          sorterSates,
+          sorterStates,
           triggerSorter,
           defaultSortDirections,
           tableLocale,
@@ -218,21 +275,31 @@ function injectSorter<RecordType>(
   });
 }
 
-function stateToInfo<RecordType>(sorterStates: SortState<RecordType>) {
+const stateToInfo = <RecordType extends any>(
+  sorterStates: SortState<RecordType>,
+): SorterResult<RecordType> => {
   const { column, sortOrder } = sorterStates;
-  return { column, order: sortOrder, field: column.dataIndex, columnKey: column.key };
-}
+  return {
+    column,
+    order: sortOrder,
+    field: column.dataIndex as SorterResult<RecordType>['field'],
+    columnKey: column.key,
+  };
+};
 
-function generateSorterInfo<RecordType>(
+const generateSorterInfo = <RecordType extends any>(
   sorterStates: SortState<RecordType>[],
-): SorterResult<RecordType> | SorterResult<RecordType>[] {
-  const list = sorterStates.filter(({ sortOrder }) => sortOrder).map(stateToInfo);
+): SorterResult<RecordType> | SorterResult<RecordType>[] => {
+  const list = sorterStates
+    .filter(({ sortOrder }) => sortOrder)
+    .map<SorterResult<RecordType>>(stateToInfo);
 
   // =========== Legacy compatible support ===========
   // https://github.com/ant-design/ant-design/pull/19226
   if (list.length === 0 && sorterStates.length) {
+    const lastIndex = sorterStates.length - 1;
     return {
-      ...stateToInfo(sorterStates[0]),
+      ...stateToInfo(sorterStates[lastIndex]),
       column: undefined,
     };
   }
@@ -242,10 +309,10 @@ function generateSorterInfo<RecordType>(
   }
 
   return list;
-}
+};
 
 export function getSortData<RecordType>(
-  data: RecordType[],
+  data: readonly RecordType[],
   sortStates: SortState<RecordType>[],
   childrenColumnName: string,
 ): RecordType[] {
@@ -255,9 +322,9 @@ export function getSortData<RecordType>(
 
   const cloneData = data.slice();
 
-  const runningSorters = innerSorterStates.filter(({ column: { sorter }, sortOrder }) => {
-    return getSortFunction(sorter) && sortOrder;
-  });
+  const runningSorters = innerSorterStates.filter(
+    ({ column: { sorter }, sortOrder }) => getSortFunction(sorter) && sortOrder,
+  );
 
   // Skip if no sorter needed
   if (!runningSorters.length) {
@@ -286,7 +353,7 @@ export function getSortData<RecordType>(
 
       return 0;
     })
-    .map<RecordType>(record => {
+    .map<RecordType>((record) => {
       const subRecords = (record as any)[childrenColumnName];
       if (subRecords) {
         return {
@@ -300,21 +367,19 @@ export function getSortData<RecordType>(
 
 interface SorterConfig<RecordType> {
   prefixCls: string;
-  columns?: ColumnsType<RecordType>;
-  children?: React.ReactNode;
+  mergedColumns: ColumnsType<RecordType>;
   onSorterChange: (
     sorterResult: SorterResult<RecordType> | SorterResult<RecordType>[],
     sortStates: SortState<RecordType>[],
   ) => void;
   sortDirections: SortOrder[];
   tableLocale?: TableLocale;
-  showSorterTooltip?: boolean;
+  showSorterTooltip?: boolean | SorterTooltipProps;
 }
 
 export default function useFilterSorter<RecordType>({
   prefixCls,
-  columns,
-  children,
+  mergedColumns,
   onSorterChange,
   sortDirections,
   tableLocale,
@@ -325,15 +390,11 @@ export default function useFilterSorter<RecordType>({
   ColumnTitleProps<RecordType>,
   () => SorterResult<RecordType> | SorterResult<RecordType>[],
 ] {
-  const mergedColumns = React.useMemo(() => {
-    return columns || convertChildrenToColumns(children);
-  }, [children, columns]);
-
   const [sortStates, setSortStates] = React.useState<SortState<RecordType>[]>(
     collectSortStates(mergedColumns, true),
   );
 
-  const mergedSorterStates = React.useMemo(() => {
+  const mergedSorterStates = React.useMemo<SortState<RecordType>[]>(() => {
     let validate = true;
     const collectedStates = collectSortStates(mergedColumns, false);
 
@@ -356,7 +417,7 @@ export default function useFilterSorter<RecordType>({
     }
 
     let multipleMode: boolean | null = null;
-    collectedStates.forEach(state => {
+    collectedStates.forEach((state) => {
       if (multipleMode === null) {
         patchStates(state);
 
@@ -388,14 +449,13 @@ export default function useFilterSorter<RecordType>({
     return {
       sortColumns,
       // Legacy
-      sortColumn: sortColumns[0] && sortColumns[0].column,
-      sortOrder: sortColumns[0] && sortColumns[0].order,
+      sortColumn: sortColumns[0]?.column,
+      sortOrder: sortColumns[0]?.order,
     };
   }, [mergedSorterStates]);
 
-  function triggerSorter(sortState: SortState<RecordType>) {
-    let newSorterStates;
-
+  const triggerSorter = (sortState: SortState<RecordType>) => {
+    let newSorterStates: SortState<RecordType>[];
     if (
       sortState.multiplePriority === false ||
       !mergedSorterStates.length ||
@@ -408,10 +468,9 @@ export default function useFilterSorter<RecordType>({
         sortState,
       ];
     }
-
     setSortStates(newSorterStates);
     onSorterChange(generateSorterInfo(newSorterStates), newSorterStates);
-  }
+  };
 
   const transformColumns = (innerColumns: ColumnsType<RecordType>) =>
     injectSorter(
@@ -424,9 +483,7 @@ export default function useFilterSorter<RecordType>({
       showSorterTooltip,
     );
 
-  const getSorters = () => {
-    return generateSorterInfo(mergedSorterStates);
-  };
+  const getSorters = () => generateSorterInfo(mergedSorterStates);
 
   return [transformColumns, mergedSorterStates, columnTitleSorterProps, getSorters];
 }
