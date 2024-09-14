@@ -19,7 +19,7 @@ if (args.length < 2) {
 
 const ALI_OSS_BUCKET = 'antd-visual-diff';
 
-function retry(promise, retries, delay) {
+function retry(promise, retries, delay = 3000) {
   return new Promise((resolve, reject) => {
     const attempt = () => {
       promise.then(resolve).catch((error) => {
@@ -136,9 +136,14 @@ async function boot() {
   if (stat.isFile()) {
     const doUpload = uploadFile(client, workspacePath, refValue);
     try {
-      await retry(doUpload, 3, 1000);
+      await retry(doUpload, 3);
     } catch (err) {
-      console.error('Uploading file `%s` failed after retry %s, error: %s', fileOrFolderName, 3, err);
+      console.error(
+        'Uploading file `%s` failed after retry %s, error: %s',
+        fileOrFolderName,
+        3,
+        err,
+      );
       process.exit(1);
     }
     return;
@@ -150,9 +155,15 @@ async function boot() {
       const doUpload = uploadFile(client, file, refValue);
       try {
         // eslint-disable-next-line no-await-in-loop
-        await retry(doUpload, 3, 1000);
+        await retry(doUpload, 3);
       } catch (err) {
-        console.warn('Skip uploading file `%s` in folder `%s` failed after retry %s, error: %s', path.relative(workspacePath, file), fileOrFolderName, 3, err);
+        console.warn(
+          'Skip uploading file `%s` in folder `%s` failed after retry %s, error: %s',
+          path.relative(workspacePath, file),
+          fileOrFolderName,
+          3,
+          err,
+        );
       }
     }
   }
