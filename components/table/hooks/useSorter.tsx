@@ -246,9 +246,8 @@ const injectSorter = <RecordType extends AnyObject = AnyObject>(
           // Inform the screen-reader so it can tell the visually impaired user which column is sorted
           if (sortOrder) {
             cell['aria-sort'] = sortOrder === 'ascend' ? 'ascending' : 'descending';
-          } else {
-            cell['aria-label'] = displayTitle || '';
           }
+          cell['aria-label'] = displayTitle || '';
           cell.className = classNames(cell.className, `${prefixCls}-column-has-sorters`);
           cell.tabIndex = 0;
           if (column.ellipsis) {
@@ -281,9 +280,9 @@ const injectSorter = <RecordType extends AnyObject = AnyObject>(
 };
 
 const stateToInfo = <RecordType extends AnyObject = AnyObject>(
-  sorterStates: SortState<RecordType>,
+  sorterState: SortState<RecordType>,
 ): SorterResult<RecordType> => {
-  const { column, sortOrder } = sorterStates;
+  const { column, sortOrder } = sorterState;
   return {
     column,
     order: sortOrder,
@@ -295,25 +294,28 @@ const stateToInfo = <RecordType extends AnyObject = AnyObject>(
 const generateSorterInfo = <RecordType extends AnyObject = AnyObject>(
   sorterStates: SortState<RecordType>[],
 ): SorterResult<RecordType> | SorterResult<RecordType>[] => {
-  const list = sorterStates
+  const activeSorters = sorterStates
     .filter(({ sortOrder }) => sortOrder)
     .map<SorterResult<RecordType>>(stateToInfo);
 
   // =========== Legacy compatible support ===========
   // https://github.com/ant-design/ant-design/pull/19226
-  if (list.length === 0 && sorterStates.length) {
+  if (activeSorters.length === 0 && sorterStates.length) {
     const lastIndex = sorterStates.length - 1;
     return {
       ...stateToInfo(sorterStates[lastIndex]),
       column: undefined,
+      order: undefined,
+      field: undefined,
+      columnKey: undefined,
     };
   }
 
-  if (list.length <= 1) {
-    return list[0] || {};
+  if (activeSorters.length <= 1) {
+    return activeSorters[0] || {};
   }
 
-  return list;
+  return activeSorters;
 };
 
 export const getSortData = <RecordType extends AnyObject = AnyObject>(

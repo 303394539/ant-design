@@ -18,10 +18,10 @@
 
 [![](https://opencollective.com/ant-design/tiers/sponsors.svg?avatarHeight=72)](https://opencollective.com/ant-design/contribute/sponsors-218/checkout) [![](https://opencollective.com/ant-design/tiers/backers.svg?avatarHeight=72)](https://opencollective.com/ant-design/contribute/backers-217/checkout)
 
-[npm-image]: http://img.shields.io/npm/v/antd.svg?style=flat-square
-[npm-url]: http://npmjs.org/package/antd
-[github-action-image]: https://github.com/ant-design/ant-design/workflows/%E2%9C%85%20test/badge.svg
-[github-action-url]: https://github.com/ant-design/ant-design/actions?query=workflow%3A%22%E2%9C%85+test%22
+[npm-image]: https://img.shields.io/npm/v/antd.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/antd
+[github-action-image]: https://github.com/ant-design/ant-design/actions/workflows/test.yml/badge.svg
+[github-action-url]: https://github.com/ant-design/ant-design/actions/workflows/test.yml
 [codecov-image]: https://img.shields.io/codecov/c/github/ant-design/ant-design/master.svg?style=flat-square
 [codecov-url]: https://codecov.io/gh/ant-design/ant-design/branch/master
 [download-image]: https://img.shields.io/npm/dm/antd.svg?style=flat-square
@@ -65,7 +65,7 @@
 - 支持服务端渲染。
 - [Electron](https://www.electronjs.org/)
 
-| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/electron/electron_48x48.png" alt="Electron" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Electron |
+| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/electron/electron_48x48.png" alt="Electron" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Electron |
 | --- | --- | --- | --- | --- |
 | Edge | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
 
@@ -105,7 +105,7 @@ export default App;
 
 ### 🛡 TypeScript
 
-`antd` 使用 TypeScript 编写，具有完整的类型定义，参考 [在 create-react-app 中使用](https://ant.design/docs/react/use-with-create-react-app-cn)。
+`antd` 使用 TypeScript 编写，具有完整的类型定义，参考 [在 Next.js 中使用](https://ant.design/docs/react/use-with-next-cn)。
 
 ## 🌍 国际化
 
@@ -115,23 +115,22 @@ export default App;
 
 - [首页](https://ant.design/)
 - [所有组件](https://ant.design/components/overview-cn)
-- [Ant Design Pro](http://pro.ant.design/)
 - [更新日志](CHANGELOG.zh-CN.md)
-- [React 底层基础组件](http://react-component.github.io/)
-- [移动端组件](http://mobile.ant.design)
-- [小程序组件](http://mini.ant.design)
-- [页面级组件](https://procomponents.ant.design)
-- [Ant Design 图表](https://charts.ant.design)
-- [Ant Design 图标](https://github.com/ant-design/ant-design-icons)
-- [Ant Design 色彩](https://github.com/ant-design/ant-design-colors)
-- [首页模板集](https://landing.ant.design)
+- [React 底层基础组件](https://react-component.github.io/)
+- [🆕 Ant Design X](https://x.ant.design/index-cn)
+- [Ant Design Pro](https://pro.ant.design/)
+- [Pro Components](https://procomponents.ant.design)
+- [Ant Design Mobile](https://mobile.ant.design)
+- [Ant Design Mini](https://mini.ant.design)
+- [Ant Design Charts](https://charts.ant.design)
+- [Ant Design Web3](https://web3.ant.design)
 - [动效](https://motion.ant.design)
-- [脚手架市场](http://scaffold.ant.design)
+- [脚手架市场](https://scaffold.ant.design)
 - [设计规范速查手册](https://github.com/ant-design/ant-design/wiki/Ant-Design-%E8%AE%BE%E8%AE%A1%E5%9F%BA%E7%A1%80%E7%AE%80%E7%89%88)
 - [开发者说明](https://github.com/ant-design/ant-design/wiki/Development)
 - [版本发布规则](https://github.com/ant-design/ant-design/wiki/%E8%BD%AE%E5%80%BC%E8%A7%84%E5%88%99%E5%92%8C%E7%89%88%E6%9C%AC%E5%8F%91%E5%B8%83%E6%B5%81%E7%A8%8B)
 - [常见问题](https://ant.design/docs/react/faq-cn)
-- [Stackblitz 在线演示](https://u.ant.design/reproduce)，用于报告 bug
+- [在线演示](https://u.ant.design/reproduce)，用于报告 bug
 - [定制主题](https://ant.design/docs/react/customize-theme-cn)
 - [国际化](https://ant.design/docs/react/i18n-cn)
 - [成为社区协作成员](https://github.com/ant-design/ant-design/wiki/Collaborators#how-to-apply-for-being-a-collaborator)
@@ -153,7 +152,7 @@ $ npm start
 
 打开浏览器访问 http://127.0.0.1:8001 ，更多[本地开发文档](https://github.com/ant-design/ant-design/wiki/Development)。
 
-## 🤝 参与共建 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+## 🤝 参与共建 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
 <table>
 <tr>
@@ -188,7 +187,7 @@ $ npm start
 
 请参考[贡献指南](https://ant.design/docs/react/contributing-cn).
 
-> 强烈推荐阅读 [《提问的智慧》](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way)、[《如何向开源社区提问题》](https://github.com/seajs/seajs/issues/545) 和 [《如何有效地报告 Bug》](http://www.chiark.greenend.org.uk/%7Esgtatham/bugs-cn.html)、[《如何向开源项目提交无法解答的问题》](https://zhuanlan.zhihu.com/p/25795393)，更好的问题更容易获得帮助。
+> 强烈推荐阅读 [《提问的智慧》](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way)、[《如何向开源社区提问题》](https://github.com/seajs/seajs/issues/545) 和 [《如何有效地报告 Bug》](https://www.chiark.greenend.org.uk/%7Esgtatham/bugs-cn.html)、[《如何向开源项目提交无法解答的问题》](https://zhuanlan.zhihu.com/p/25795393)，更好的问题更容易获得帮助。
 
 [![赞助链接](https://raw.githubusercontent.com/BoostIO/issuehunt-materials/master/v1/issuehunt-button-v1.svg)](https://issuehunt.io/repos/34526884)
 
@@ -201,7 +200,7 @@ $ npm start
 通过 Stack Overflow 或者 Segment Fault 提问时，建议加上 `antd` 标签。
 
 1. [GitHub Discussions](https://github.com/ant-design/ant-design/discussions)
-2. [Stack Overflow](http://stackoverflow.com/questions/tagged/antd)（英文）
+2. [Stack Overflow](https://stackoverflow.com/questions/tagged/antd)（英文）
 3. [Segment Fault](https://segmentfault.com/t/antd)（中文）
 
 ## Issue 赞助

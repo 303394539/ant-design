@@ -31,14 +31,11 @@ interface LineProps extends ProgressProps {
  *   }
  */
 export const sortGradient = (gradients: StringGradients) => {
-  let tempArr: any[] = [];
+  let tempArr: { key: number; value?: string }[] = [];
   Object.keys(gradients).forEach((key) => {
     const formattedKey = parseFloat(key.replace(/%/g, ''));
-    if (!isNaN(formattedKey)) {
-      tempArr.push({
-        key: formattedKey,
-        value: gradients[key],
-      });
+    if (!Number.isNaN(formattedKey)) {
+      tempArr.push({ key: formattedKey, value: gradients[key] });
     }
   });
   tempArr = tempArr.sort((a, b) => a.key - b.key);
@@ -71,10 +68,10 @@ export const handleGradient = (
   if (Object.keys(rest).length !== 0) {
     const sortedGradients = sortGradient(rest as StringGradients);
     const background = `linear-gradient(${direction}, ${sortedGradients})`;
-    return { background, [LineStrokeColorVar]: background } as React.CSSProperties;
+    return { background, [LineStrokeColorVar]: background };
   }
   const background = `linear-gradient(${direction}, ${from}, ${to})`;
-  return { background, [LineStrokeColorVar]: background } as React.CSSProperties;
+  return { background, [LineStrokeColorVar]: background };
 };
 
 const Line: React.FC<LineProps> = (props) => {
@@ -116,7 +113,7 @@ const Line: React.FC<LineProps> = (props) => {
     borderRadius,
   };
 
-  const percentStyle = {
+  const percentStyle: React.CSSProperties = {
     width: `${validProgress(percent)}%`,
     height,
     borderRadius,
@@ -126,12 +123,12 @@ const Line: React.FC<LineProps> = (props) => {
 
   const successPercent = getSuccessPercent(props);
 
-  const successPercentStyle = {
+  const successPercentStyle: React.CSSProperties = {
     width: `${validProgress(successPercent)}%`,
     height,
     borderRadius,
     backgroundColor: success?.strokeColor,
-  } as React.CSSProperties;
+  };
 
   const outerStyle: React.CSSProperties = {
     width: width < 0 ? '100%' : width,

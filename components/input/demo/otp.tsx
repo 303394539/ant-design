@@ -11,8 +11,13 @@ const App: React.FC = () => {
     console.log('onChange:', text);
   };
 
+  const onInput: OTPProps['onInput'] = (value) => {
+    console.log('onInput:', value);
+  };
+
   const sharedProps: OTPProps = {
     onChange,
+    onInput,
   };
 
   return (
@@ -27,6 +32,13 @@ const App: React.FC = () => {
       <Input.OTP variant="filled" {...sharedProps} />
       <Title level={5}>With custom display character</Title>
       <Input.OTP mask="🔒" {...sharedProps} />
+      <Title level={5}>With custom ReactNode separator</Title>
+      <Input.OTP separator={<span>/</span>} {...sharedProps} />
+      <Title level={5}>With custom function separator</Title>
+      <Input.OTP
+        separator={(i) => <span style={{ color: i & 1 ? 'red' : 'blue' }}>—</span>}
+        {...sharedProps}
+      />
     </Flex>
   );
 };

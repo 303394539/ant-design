@@ -1,4 +1,3 @@
-/* eslint-disable no-template-curly-in-string */
 import Pagination from 'rc-pagination/lib/locale/ar_EG';
 
 import type { Locale } from '.';
@@ -30,6 +29,11 @@ const localeValues: Locale = {
     triggerDesc: 'ترتيب تنازلي',
     triggerAsc: 'ترتيب تصاعدي',
     cancelSort: 'إلغاء الترتيب',
+  },
+  Tour: {
+    Next: 'التالي',
+    Previous: 'السابق',
+    Finish: 'إنهاء',
   },
   Modal: {
     okText: 'تأكيد',

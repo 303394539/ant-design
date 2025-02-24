@@ -1,3 +1,4 @@
+import { scan } from 'react-scan'; // import this BEFORE react
 import React, { Suspense, useCallback, useEffect } from 'react';
 import {
   createCache,
@@ -22,6 +23,8 @@ import SiteThemeProvider from '../SiteThemeProvider';
 import type { SiteContextProps } from '../slots/SiteContext';
 import SiteContext from '../slots/SiteContext';
 
+import '@ant-design/v5-patch-for-react-19';
+
 const ThemeSwitch = React.lazy(() => import('../common/ThemeSwitch'));
 
 type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T][];
@@ -43,6 +46,10 @@ if (typeof window !== 'undefined') {
       location.hash = `#${hashId.replace(/^components-/, '')}`;
     }
   }
+  scan({
+    enabled: process.env.NODE_ENV !== 'production',
+    log: true, // logs render info to console (default: false)
+  });
 }
 
 const getAlgorithm = (themes: ThemeName[] = []) =>
@@ -69,6 +76,9 @@ const GlobalLayout: React.FC = () => {
       theme: [],
       bannerVisible: false,
     });
+
+  // TODO: This can be remove in v6
+  const useCssVar = searchParams.get('cssVar') !== 'false';
 
   const updateSiteConfig = useCallback(
     (props: SiteState) => {
@@ -150,8 +160,8 @@ const GlobalLayout: React.FC = () => {
     () => ({
       algorithm: getAlgorithm(theme),
       token: { motion: !theme.includes('motion-off') },
-      cssVar: true,
-      hashed: false,
+      cssVar: useCssVar,
+      hashed: !useCssVar,
     }),
     [theme],
   );
