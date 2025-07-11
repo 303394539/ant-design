@@ -14,8 +14,8 @@ export interface SplitBarProps {
   startCollapsible: boolean;
   endCollapsible: boolean;
   onOffsetStart: (index: number) => void;
-  onOffsetUpdate: (index: number, offsetX: number, offsetY: number) => void;
-  onOffsetEnd: VoidFunction;
+  onOffsetUpdate: (index: number, offsetX: number, offsetY: number, lazyEnd?: boolean) => void;
+  onOffsetEnd: (lazyEnd?: boolean) => void;
   onCollapse: (index: number, type: 'start' | 'end') => void;
   vertical: boolean;
   ariaNow: number;
@@ -93,11 +93,12 @@ const SplitBar: React.FC<SplitBarProps> = (props) => {
   });
 
   const handleLazyEnd = useEvent(() => {
-    onOffsetUpdate(index, constrainedOffsetX, constrainedOffsetY);
+    onOffsetUpdate(index, constrainedOffsetX, constrainedOffsetY, true);
     setConstrainedOffset(0);
+    onOffsetEnd(true);
   });
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (startPos) {
       const onMouseMove = (e: MouseEvent) => {
         const { pageX, pageY } = e;
@@ -114,9 +115,10 @@ const SplitBar: React.FC<SplitBarProps> = (props) => {
       const onMouseUp = () => {
         if (lazy) {
           handleLazyEnd();
+        } else {
+          onOffsetEnd();
         }
         setStartPos(null);
-        onOffsetEnd();
       };
 
       const handleTouchMove = (e: TouchEvent) => {
@@ -136,9 +138,10 @@ const SplitBar: React.FC<SplitBarProps> = (props) => {
       const handleTouchEnd = () => {
         if (lazy) {
           handleLazyEnd();
+        } else {
+          onOffsetEnd();
         }
         setStartPos(null);
-        onOffsetEnd();
       };
 
       window.addEventListener('touchmove', handleTouchMove);
@@ -147,13 +150,13 @@ const SplitBar: React.FC<SplitBarProps> = (props) => {
       window.addEventListener('mouseup', onMouseUp);
 
       return () => {
-        window.removeEventListener('mousemove', onMouseMove);
-        window.removeEventListener('mouseup', onMouseUp);
         window.removeEventListener('touchmove', handleTouchMove);
         window.removeEventListener('touchend', handleTouchEnd);
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
       };
     }
-  }, [startPos, lazy, vertical, index, containerSize, ariaNow, ariaMin, ariaMax]);
+  }, [startPos]);
 
   const transformStyle = {
     [`--${splitBarPrefixCls}-preview-offset`]: `${constrainedOffset}px`,

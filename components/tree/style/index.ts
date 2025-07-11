@@ -124,6 +124,8 @@ export const genBaseStyle = (prefixCls: string, token: TreeToken): CSSObject => 
   return {
     [treeCls]: {
       ...resetComponent(token),
+      // fix https://github.com/ant-design/ant-design/issues/50316
+      ['--rc-virtual-list-scrollbar-bg' as const]: token.colorSplit,
       background: token.colorBgContainer,
       borderRadius: token.borderRadius,
       transition: `background-color ${token.motionDurationSlow}`,
@@ -226,7 +228,7 @@ export const genBaseStyle = (prefixCls: string, token: TreeToken): CSSObject => 
 
         [`&:not(${treeNodeCls}-disabled).filter-node ${treeCls}-title`]: {
           color: token.colorPrimary,
-          fontWeight: 500,
+          fontWeight: token.fontWeightStrong,
         },
 
         '&-draggable': {
@@ -432,6 +434,12 @@ export const genBaseStyle = (prefixCls: string, token: TreeToken): CSSObject => 
 export const genTreeStyle = (
   prefixCls: string,
   token: AliasToken & TreeSharedToken & CSSUtil,
+  /**
+   * @descCN 是否启用目录树样式
+   * @descEN Whether to enable directory style
+   * @default true
+   */
+  enableDirectory = true,
 ): CSSInterpolation => {
   const treeCls = `.${prefixCls}`;
   const treeNodeCls = `${treeCls}-treenode`;
@@ -448,8 +456,8 @@ export const genTreeStyle = (
     // Basic
     genBaseStyle(prefixCls, treeToken),
     // Directory
-    genDirectoryStyle(treeToken),
-  ];
+    enableDirectory && genDirectoryStyle(treeToken),
+  ].filter(Boolean);
 };
 
 export const initComponentToken = (token: AliasToken): TreeSharedToken => {

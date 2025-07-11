@@ -129,7 +129,7 @@ const Watermark: React.FC<WatermarkProps> = (props) => {
   const [container, setContainer] = React.useState<HTMLDivElement | null>();
 
   // Used for nest case like Modal, Drawer
-  const [subElements, setSubElements] = React.useState(new Set<HTMLElement>());
+  const [subElements, setSubElements] = React.useState(() => new Set<HTMLElement>());
 
   // Nest elements should also support watermark
   const targetElements = React.useMemo(() => {
@@ -193,8 +193,8 @@ const Watermark: React.FC<WatermarkProps> = (props) => {
           gapY,
         ] as const;
 
-        const result = getClipsCache(params, () => getClips(...params));
-        const [nextClips, clipWidth] = result;
+        const [nextClips, clipWidth] = getClipsCache(params, () => getClips(...params));
+
         setWatermarkInfo([nextClips, clipWidth]);
       };
 

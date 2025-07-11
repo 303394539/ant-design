@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`renders components/form/demo/advanced-search.tsx correctly 1`] = `
 Array [
@@ -5234,7 +5234,7 @@ exports[`renders components/form/demo/layout.tsx correctly 1`] = `
                   <input
                     checked=""
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="layout"
                     type="radio"
                     value="horizontal"
                   />
@@ -5256,7 +5256,7 @@ exports[`renders components/form/demo/layout.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="layout"
                     type="radio"
                     value="vertical"
                   />
@@ -5278,7 +5278,7 @@ exports[`renders components/form/demo/layout.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="layout"
                     type="radio"
                     value="inline"
                   />
@@ -5479,6 +5479,45 @@ exports[`renders components/form/demo/layout-can-wrap.tsx correctly 1`] = `
               aria-required="true"
               class="ant-input ant-input-outlined"
               id="wrap_password"
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="ant-form-item"
+  >
+    <div
+      class="ant-row ant-form-item-row"
+    >
+      <div
+        class="ant-col ant-form-item-label ant-form-item-label-left ant-form-item-label-wrap"
+        style="flex:0 0 110px"
+      >
+        <label
+          class="ant-form-item-no-colon"
+          for="wrap_password1"
+          title="A super long label text"
+        >
+          A super long label text
+        </label>
+      </div>
+      <div
+        class="ant-col ant-form-item-control"
+        style="flex:1 1 auto"
+      >
+        <div
+          class="ant-form-item-control-input"
+        >
+          <div
+            class="ant-form-item-control-input-content"
+          >
+            <input
+              class="ant-input ant-input-outlined"
+              id="wrap_password1"
               type="text"
               value=""
             />
@@ -7350,7 +7389,7 @@ exports[`renders components/form/demo/required-mark.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="requiredMarkValue"
                     type="radio"
                     value="true"
                   />
@@ -7373,7 +7412,7 @@ exports[`renders components/form/demo/required-mark.tsx correctly 1`] = `
                   <input
                     checked=""
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="requiredMarkValue"
                     type="radio"
                     value="optional"
                   />
@@ -7395,7 +7434,7 @@ exports[`renders components/form/demo/required-mark.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="requiredMarkValue"
                     type="radio"
                     value="false"
                   />
@@ -7417,7 +7456,7 @@ exports[`renders components/form/demo/required-mark.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="requiredMarkValue"
                     type="radio"
                     value="customize"
                   />
@@ -7637,7 +7676,7 @@ exports[`renders components/form/demo/size.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="size"
                     type="radio"
                     value="small"
                   />
@@ -7660,7 +7699,7 @@ exports[`renders components/form/demo/size.tsx correctly 1`] = `
                   <input
                     checked=""
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="size"
                     type="radio"
                     value="default"
                   />
@@ -7682,7 +7721,7 @@ exports[`renders components/form/demo/size.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="size"
                     type="radio"
                     value="large"
                   />
@@ -9697,7 +9736,7 @@ exports[`renders components/form/demo/validate-other.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-input"
-                    name="test-id"
+                    name="radio-group"
                     type="radio"
                     value="a"
                   />
@@ -9719,7 +9758,7 @@ exports[`renders components/form/demo/validate-other.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-input"
-                    name="test-id"
+                    name="radio-group"
                     type="radio"
                     value="b"
                   />
@@ -9741,7 +9780,7 @@ exports[`renders components/form/demo/validate-other.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-input"
-                    name="test-id"
+                    name="radio-group"
                     type="radio"
                     value="c"
                   />
@@ -9800,7 +9839,7 @@ exports[`renders components/form/demo/validate-other.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="radio-button"
                     type="radio"
                     value="a"
                   />
@@ -9822,7 +9861,7 @@ exports[`renders components/form/demo/validate-other.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="radio-button"
                     type="radio"
                     value="b"
                   />
@@ -9844,7 +9883,7 @@ exports[`renders components/form/demo/validate-other.tsx correctly 1`] = `
                 >
                   <input
                     class="ant-radio-button-input"
-                    name="test-id"
+                    name="radio-button"
                     type="radio"
                     value="c"
                   />
@@ -12326,6 +12365,7 @@ exports[`renders components/form/demo/validate-static.tsx correctly 1`] = `
               >
                 <button
                   class="ant-input-clear-icon ant-input-clear-icon-hidden ant-input-clear-icon-has-suffix"
+                  tabindex="-1"
                   type="button"
                 >
                   <span
@@ -12508,6 +12548,7 @@ exports[`renders components/form/demo/validate-static.tsx correctly 1`] = `
               >
                 <button
                   class="ant-input-clear-icon ant-input-clear-icon-hidden ant-input-clear-icon-has-suffix"
+                  tabindex="-1"
                   type="button"
                 >
                   <span
@@ -12612,43 +12653,80 @@ exports[`renders components/form/demo/validate-static.tsx correctly 1`] = `
           >
             <div
               class="ant-otp"
+              role="group"
             >
-              <input
-                class="ant-input ant-input-outlined ant-input-status-success ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-success ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-success ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-success ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-success ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-success ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 1"
+                  class="ant-input ant-input-outlined ant-input-status-success ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 2"
+                  class="ant-input ant-input-outlined ant-input-status-success ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 3"
+                  class="ant-input ant-input-outlined ant-input-status-success ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 4"
+                  class="ant-input ant-input-outlined ant-input-status-success ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 5"
+                  class="ant-input ant-input-outlined ant-input-status-success ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 6"
+                  class="ant-input ant-input-outlined ant-input-status-success ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
             </div>
           </div>
         </div>
@@ -12682,43 +12760,80 @@ exports[`renders components/form/demo/validate-static.tsx correctly 1`] = `
           >
             <div
               class="ant-otp"
+              role="group"
             >
-              <input
-                class="ant-input ant-input-outlined ant-input-status-warning ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-warning ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-warning ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-warning ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-warning ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-warning ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 1"
+                  class="ant-input ant-input-outlined ant-input-status-warning ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 2"
+                  class="ant-input ant-input-outlined ant-input-status-warning ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 3"
+                  class="ant-input ant-input-outlined ant-input-status-warning ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 4"
+                  class="ant-input ant-input-outlined ant-input-status-warning ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 5"
+                  class="ant-input ant-input-outlined ant-input-status-warning ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 6"
+                  class="ant-input ant-input-outlined ant-input-status-warning ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
             </div>
           </div>
         </div>
@@ -12752,43 +12867,80 @@ exports[`renders components/form/demo/validate-static.tsx correctly 1`] = `
           >
             <div
               class="ant-otp"
+              role="group"
             >
-              <input
-                class="ant-input ant-input-outlined ant-input-status-error ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-error ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-error ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-error ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-error ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
-              <input
-                class="ant-input ant-input-outlined ant-input-status-error ant-otp-input"
-                size="1"
-                type="text"
-                value=""
-              />
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 1"
+                  class="ant-input ant-input-outlined ant-input-status-error ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 2"
+                  class="ant-input ant-input-outlined ant-input-status-error ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 3"
+                  class="ant-input ant-input-outlined ant-input-status-error ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 4"
+                  class="ant-input ant-input-outlined ant-input-status-error ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 5"
+                  class="ant-input ant-input-outlined ant-input-status-error ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
+              <span
+                class="ant-otp-input-wrapper"
+                role="presentation"
+              >
+                <input
+                  aria-label="OTP Input 6"
+                  class="ant-input ant-input-outlined ant-input-status-error ant-otp-input"
+                  size="1"
+                  type="text"
+                  value=""
+                />
+              </span>
             </div>
           </div>
         </div>
@@ -12902,6 +13054,7 @@ exports[`renders components/form/demo/validate-static.tsx correctly 1`] = `
               >
                 <button
                   class="ant-input-clear-icon ant-input-clear-icon-hidden ant-input-clear-icon-has-suffix"
+                  tabindex="-1"
                   type="button"
                 >
                   <span

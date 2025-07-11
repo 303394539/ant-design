@@ -1,5 +1,7 @@
+// prettier-ignore
 import { scan } from 'react-scan'; // import this BEFORE react
-import React, { Suspense, useCallback, useEffect } from 'react';
+
+import React, { useCallback, useEffect } from 'react';
 import {
   createCache,
   extractStyle,
@@ -17,7 +19,6 @@ import { createSearchParams, useOutlet, useSearchParams, useServerInsertedHTML }
 
 import { DarkContext } from '../../hooks/useDark';
 import useLayoutState from '../../hooks/useLayoutState';
-import useLocation from '../../hooks/useLocation';
 import type { ThemeName } from '../common/ThemeSwitch';
 import SiteThemeProvider from '../SiteThemeProvider';
 import type { SiteContextProps } from '../slots/SiteContext';
@@ -25,18 +26,18 @@ import SiteContext from '../slots/SiteContext';
 
 import '@ant-design/v5-patch-for-react-19';
 
-const ThemeSwitch = React.lazy(() => import('../common/ThemeSwitch'));
-
 type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T][];
 type SiteState = Partial<Omit<SiteContextProps, 'updateSiteContext'>>;
 
 const RESPONSIVE_MOBILE = 768;
 export const ANT_DESIGN_NOT_SHOW_BANNER = 'ANT_DESIGN_NOT_SHOW_BANNER';
 
-// const styleCache = createCache();
-// if (typeof global !== 'undefined') {
-//   (global as any).styleCache = styleCache;
-// }
+const getSystemTheme = (): 'dark' | 'light' => {
+  if (typeof window === 'undefined') {
+    return 'light';
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+};
 
 // Compatible with old anchors
 if (typeof window !== 'undefined') {
@@ -46,10 +47,13 @@ if (typeof window !== 'undefined') {
       location.hash = `#${hashId.replace(/^components-/, '')}`;
     }
   }
-  scan({
-    enabled: process.env.NODE_ENV !== 'production',
-    log: true, // logs render info to console (default: false)
-  });
+
+  if (process.env.NODE_ENV !== 'production') {
+    scan({
+      enabled: false,
+      showToolbar: true,
+    });
+  }
 }
 
 const getAlgorithm = (themes: ThemeName[] = []) =>
@@ -67,7 +71,6 @@ const getAlgorithm = (themes: ThemeName[] = []) =>
 
 const GlobalLayout: React.FC = () => {
   const outlet = useOutlet();
-  const { pathname } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [{ theme = [], direction, isMobile, bannerVisible = false }, setSiteState] =
     useLayoutState<SiteState>({
@@ -76,6 +79,8 @@ const GlobalLayout: React.FC = () => {
       theme: [],
       bannerVisible: false,
     });
+
+  const [systemTheme, setSystemTheme] = React.useState<'dark' | 'light'>(() => getSystemTheme());
 
   // TODO: This can be remove in v6
   const useCssVar = searchParams.get('cssVar') !== 'false';
@@ -99,7 +104,7 @@ const GlobalLayout: React.FC = () => {
         if (key === 'theme') {
           nextSearchParams = createSearchParams({
             ...nextSearchParams,
-            theme: value.filter((t) => t !== 'light'),
+            theme: value,
           });
 
           document
@@ -120,30 +125,68 @@ const GlobalLayout: React.FC = () => {
   };
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      const newSystemTheme = e.matches ? 'dark' : 'light';
+      setSystemTheme(newSystemTheme);
+
+      const urlTheme = searchParams.getAll('theme') as ThemeName[];
+      const hasUserColorTheme = urlTheme.includes('dark') || urlTheme.includes('light');
+      if (!hasUserColorTheme) {
+        setSiteState((prev) => ({
+          ...prev,
+          theme: [...urlTheme.filter((t) => t !== 'dark' && t !== 'light'), newSystemTheme],
+        }));
+
+        document.documentElement.setAttribute(
+          'data-prefers-color',
+          newSystemTheme === 'dark' ? 'dark' : 'light',
+        );
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleSystemThemeChange);
+    };
+  }, [searchParams, setSiteState]);
+
+  useEffect(() => {
     const _theme = searchParams.getAll('theme') as ThemeName[];
+    const hasUserColorTheme = _theme.includes('dark') || _theme.includes('light');
+    const finalTheme = hasUserColorTheme
+      ? _theme
+      : [..._theme.filter((t) => t !== 'dark' && t !== 'light'), systemTheme];
     const _direction = searchParams.get('direction') as DirectionType;
-    // const storedBannerVisibleLastTime =
-    //   localStorage && localStorage.getItem(ANT_DESIGN_NOT_SHOW_BANNER);
-    // const storedBannerVisible =
-    //   storedBannerVisibleLastTime && dayjs().diff(dayjs(storedBannerVisibleLastTime), 'day') >= 1;
 
     setSiteState({
-      theme: _theme,
+      theme: finalTheme,
       direction: _direction === 'rtl' ? 'rtl' : 'ltr',
-      // bannerVisible: storedBannerVisibleLastTime ? !!storedBannerVisible : true,
     });
     document.documentElement.setAttribute(
       'data-prefers-color',
-      _theme.includes('dark') ? 'dark' : 'light',
+      finalTheme.includes('dark') ? 'dark' : 'light',
     );
     // Handle isMobile
     updateMobileMode();
+
+    // 配合 dumi 的 mirror-notify 脚本使用
+    const retrieveMirrorNotification = (window as any)[Symbol.for('antd.mirror-notify')];
+    if (typeof retrieveMirrorNotification === 'function') {
+      retrieveMirrorNotification();
+    }
 
     window.addEventListener('resize', updateMobileMode);
     return () => {
       window.removeEventListener('resize', updateMobileMode);
     };
-  }, []);
+  }, [systemTheme]);
 
   const siteContextValue = React.useMemo<SiteContextProps>(
     () => ({
@@ -202,39 +245,21 @@ const GlobalLayout: React.FC = () => {
     />
   ));
 
-  const demoPage = pathname.startsWith('/~demos');
-
-  // ============================ Render ============================
-  let content: React.ReactNode = outlet;
-
-  // Demo page should not contain App component
-  if (!demoPage) {
-    content = (
-      <App>
-        {outlet}
-        <Suspense>
-          <ThemeSwitch
-            value={theme}
-            onChange={(nextTheme) => updateSiteConfig({ theme: nextTheme })}
-          />
-        </Suspense>
-      </App>
-    );
-  }
-
   return (
-    <DarkContext.Provider value={theme.includes('dark')}>
+    <DarkContext value={theme.includes('dark')}>
       <StyleProvider
         cache={styleCache}
         linters={[legacyNotSelectorLinter, parentSelectorLinter, NaNLinter]}
       >
-        <SiteContext.Provider value={siteContextValue}>
+        <SiteContext value={siteContextValue}>
           <SiteThemeProvider theme={themeConfig}>
-            <HappyProvider disabled={!theme.includes('happy-work')}>{content}</HappyProvider>
+            <HappyProvider disabled={!theme.includes('happy-work')}>
+              <App>{outlet}</App>
+            </HappyProvider>
           </SiteThemeProvider>
-        </SiteContext.Provider>
+        </SiteContext>
       </StyleProvider>
-    </DarkContext.Provider>
+    </DarkContext>
   );
 };
 
